@@ -1,3 +1,11 @@
+#---
+# Excerpted from "Agile Web Development with Rails",
+# published by The Pragmatic Bookshelf.
+# Copyrights apply to this code. It may not be used to create training material, 
+# courses, books, articles, and the like. Contact us if you are in doubt.
+# We make no guarantees that this code is fit for any purpose. 
+# Visit http://www.pragmaticprogrammer.com/titles/rails4 for more book information.
+#---
 class LineItemsController < ApplicationController
   # GET /line_items
   # GET /line_items.json
@@ -40,19 +48,21 @@ class LineItemsController < ApplicationController
   # POST /line_items
   # POST /line_items.json
   def create
-    #@line_item = LineItem.new(params[:line_item])
     @cart = current_cart
     product = Product.find(params[:product_id])
-    #@line_item = @cart.line_items.build(:product_id => product.id)
     @line_item = @cart.add_product(product.id)
+    @line_item.product = product
 
     respond_to do |format|
       if @line_item.save
-        format.html { redirect_to @line_item.cart } #, notice: 'Line item was successfully created.' }
-        format.json { render json: @line_item, status: :created, location: @line_item }
+        format.html { redirect_to store_url }
+        format.js   { @current_item = @line_item }
+        format.json { render json: @line_item,
+          status: :created, location: @line_item }
       else
         format.html { render action: "new" }
-        format.json { render json: @line_item.errors, status: :unprocessable_entity }
+        format.json { render json: @line_item.errors,
+          status: :unprocessable_entity }
       end
     end
   end
@@ -80,7 +90,7 @@ class LineItemsController < ApplicationController
     @line_item.destroy
 
     respond_to do |format|
-      format.html { redirect_to @line_item.cart, notice: 'Line Item was deleted successfully..' }
+      format.html { redirect_to line_items_url }
       format.json { head :no_content }
     end
   end
