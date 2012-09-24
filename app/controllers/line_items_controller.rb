@@ -1,5 +1,14 @@
-
+#---
+# Excerpted from "Agile Web Development with Rails",
+# published by The Pragmatic Bookshelf.
+# Copyrights apply to this code. It may not be used to create training material, 
+# courses, books, articles, and the like. Contact us if you are in doubt.
+# We make no guarantees that this code is fit for any purpose. 
+# Visit http://www.pragmaticprogrammer.com/titles/rails4 for more book information.
+#---
 class LineItemsController < ApplicationController
+    skip_before_filter :authorize, only: :create
+
   # GET /line_items
   # GET /line_items.json
   def index
@@ -8,6 +17,7 @@ class LineItemsController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @line_items }
+      format.xml { render xml: @line_items }
     end
   end
 
@@ -42,8 +52,15 @@ class LineItemsController < ApplicationController
   # POST /line_items.json
   def create
     @cart = current_cart
-    product = Product.find(params[:product_id])
-    @line_item = @cart.add_product(product.id)
+    if params[:line_item]
+      # ActiveResource
+      params[:line_item][:order_id] = params[:order_id]
+      @line_item = LineItem.new(params[:line_item])
+    else
+      # HTML forms
+      product = Product.find(params[:product_id])
+      @line_item = @cart.add_product(product.id)
+    end
     @line_item.product = product
 
     respond_to do |format|
