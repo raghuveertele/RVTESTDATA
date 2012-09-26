@@ -52,6 +52,7 @@ class LineItemsController < ApplicationController
   # POST /line_items.json
   def create
     @cart = current_cart
+
     if params[:line_item]
       # ActiveResource
       params[:line_item][:order_id] = params[:order_id]
@@ -61,6 +62,12 @@ class LineItemsController < ApplicationController
       product = Product.find(params[:product_id])
       @line_item = @cart.add_product(product.id)
     end
+=begin
+    @cart = current_cart
+    product = Product.find(params[:product_id])
+    @line_item = @cart.add_product(product.id)
+    @line_item.product = product
+=end
     @line_item.product = product
 
     respond_to do |format|
